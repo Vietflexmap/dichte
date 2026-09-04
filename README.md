@@ -16,17 +16,32 @@ WebGIS mô phỏng do **Long Ngo** thiết kế để minh họa hiệu quả c�
 - Biểu đồ **cột theo ngày + đường tích lũy** bằng Chart.js.
 - Giao diện responsive cho máy tính và điện thoại.
 
+## Bản đồ nền Vietflex/VN
+
+EpiMap dùng cấu hình bản đồ nền theo dự án **[Vietflexmap/VN](https://github.com/Vietflexmap/VN)** với tham số ưu tiên tiếng Việt và khu vực Việt Nam (`hl=vi`, `gl=VN`). Attribution hiển thị trên bản đồ được đổi sang nhận diện **cờ Việt Nam + Vietflex**, thay cho prefix mặc định `Leaflet | © OpenStreetMap contributors` trước đây.
+
+Ba lựa chọn lớp nền hiện tại được ánh xạ theo adapter tương thích của Vietflex/VN:
+
+- **Vietflex · Đường phố** → roadmap.
+- **Vietflex · Địa hình** → terrain.
+- **Vietflex · Vệ tinh + đường** → hybrid.
+
+Leaflet vẫn được giữ làm **engine overlay nội bộ** để bảo đảm tương thích với `Leaflet.markercluster`, marker, circle, polyline và các chức năng truy vấn hiện có. Việc giữ engine nội bộ không còn làm xuất hiện branding Leaflet trên attribution của giao diện.
+
+> Vietflex/VN ghi rõ `google.com/vt` là chế độ compatibility/legacy và không phải endpoint Map Tiles API công khai được Google tài liệu hóa. Khi triển khai production nên chuyển sang Google Map Tiles API chính thức với API key và tuân thủ yêu cầu attribution của nhà cung cấp.
+
 ## Công nghệ
 
-- Leaflet 1.9.4
-- Leaflet.markercluster 1.5.3
-- Chart.js 4.4.7
-- OpenStreetMap / CARTO basemap
-- HTML, CSS, JavaScript thuần; không cần backend
+- Vietflex/VN — cấu hình lớp nền ưu tiên Việt Nam và nhận diện attribution.
+- Leaflet 1.9.4 — engine overlay nội bộ.
+- Leaflet.markercluster 1.5.3.
+- Chart.js 4.4.7.
+- Google compatibility tiles theo cấu hình Vietflex/VN.
+- HTML, CSS, JavaScript thuần; không cần backend.
 
 ## Nguồn mã và giấy phép
 
-Phiên bản này được xây dựng dựa trên mã nguồn mở **[Vietflexmap/anhmap](https://github.com/Vietflexmap/anhmap)** và kế thừa định hướng WebGIS chạy trực tiếp trong trình duyệt. Phần mã mới/điều chỉnh được phát hành theo **MIT License**, tương thích với giấy phép của `anhmap`.
+Phiên bản này được xây dựng dựa trên mã nguồn mở **[Vietflexmap/anhmap](https://github.com/Vietflexmap/anhmap)** và sử dụng định hướng bản đồ Việt Nam từ **[Vietflexmap/VN](https://github.com/Vietflexmap/VN)**. Phần mã mới/điều chỉnh của EpiMap được phát hành theo **MIT License**.
 
 Copyright (c) 2026 Long Ngo.
 
@@ -34,7 +49,7 @@ Các thư viện, bản đồ nền và dịch vụ bên thứ ba vẫn tuân th
 
 ## Chạy nhanh
 
-Mở trực tiếp `index.html` bằng trình duyệt hiện đại. Kết nối Internet cần thiết để tải Leaflet, Chart.js và lớp nền bản đồ.
+Mở trực tiếp `index.html` bằng trình duyệt hiện đại. Kết nối Internet cần thiết để tải thư viện JavaScript và lớp nền bản đồ.
 
 ## Cấu trúc
 
@@ -43,6 +58,7 @@ Mở trực tiếp `index.html` bằng trình duyệt hiện đại. Kết nối
 ├── index.html
 ├── assets/
 │   ├── app.js
+│   ├── vietflex-basemap.js
 │   └── styles.css
 ├── LICENSE
 ├── THIRD_PARTY_NOTICES.md
