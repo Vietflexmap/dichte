@@ -6,11 +6,12 @@
   <meta name="description" content="WebGIS mô phỏng truy vấn dịch tễ bằng dữ liệu hoàn toàn giả định.">
   <meta name="theme-color" content="#0b1725">
   <title>EpiMap Việt Nam — Dữ liệu giả định</title>
-  <link rel="preconnect" href="https://unpkg.com">
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="preconnect" href="https://mt0.google.com">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" crossorigin="">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" crossorigin="">
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/Vietflexmap/VN@6144d565fcf236727577ab3c4471bbe49f86892f/dist/vietflex.css">
+  <script src="https://cdn.jsdelivr.net/gh/Vietflexmap/VN@6144d565fcf236727577ab3c4471bbe49f86892f/dist/vietflex.js"></script>
   <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
@@ -78,9 +79,9 @@
 
       <div class="layers-menu glass" id="layersMenu" hidden>
         <strong>Lớp hiển thị</strong>
-        <label><input type="radio" name="basemap" value="street" checked> Đường phố</label>
-        <label><input type="radio" name="basemap" value="light"> Tối giản</label>
-        <label><input type="radio" name="basemap" value="dark"> Ban đêm</label>
+        <label><input type="radio" name="basemap" value="street" checked> 🇻🇳 Vietflex · Đường phố</label>
+        <label><input type="radio" name="basemap" value="light"> 🇻🇳 Vietflex · Địa hình</label>
+        <label><input type="radio" name="basemap" value="dark"> 🇻🇳 Vietflex · Vệ tinh + đường</label>
         <hr>
         <label><input id="clusterToggle" type="checkbox" checked> Gom cụm ca bệnh</label>
         <label><input id="zoneToggle" type="checkbox"> Vùng nguy cơ 3 km</label>
@@ -159,16 +160,16 @@
         <li>Tọa độ chỉ dùng ở mức khu vực và đã được làm lệch có chủ đích.</li>
         <li>Không dùng để chẩn đoán, cảnh báo hay ra quyết định sức khỏe cộng đồng.</li>
       </ul>
-      <div class="tech-note"><strong>Nền tảng mở</strong><span>Vietflex/VN · Chart.js · GeoJSON · Web standards</span></div>
+      <div class="tech-note"><strong>Nền tảng mở</strong><span>Vietflex/VN 1.0.0 · Chart.js · GeoJSON · Web standards</span></div>
+      <div class="tech-note"><strong>Nguồn bản đồ</strong><span>Vietflexmap/VN · commit 6144d565fcf236727577ab3c4471bbe49f86892f.</span></div>
       <div class="tech-note"><strong>Nguồn mã</strong><span>Dựa trên mã nguồn MIT từ Vietflexmap/anhmap; kịch bản mô phỏng do Long Ngo thiết kế © 2026.</span></div>
       <button class="primary-action" id="ackInfo" type="button">Tôi đã hiểu</button>
     </dialog>
 
     <noscript>Website cần JavaScript để hiển thị bản đồ và truy vấn dữ liệu.</noscript>
   </div>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" crossorigin=""></script>
-  <script src="assets/vietflex-basemap.js"></script>
+
+  <script src="assets/vietflex-native.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <script src="assets/app.js"></script>
 </body>
