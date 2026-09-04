@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="WebGIS mô phỏng truy vấn dịch tễ bằng dữ liệu hoàn toàn giả định.">
+  <meta name="theme-color" content="#0b1725">
+  <title>EpiMap Việt Nam — Dữ liệu giả định</title>
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="preconnect" href="https://tile.openstreetmap.org">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" crossorigin="">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" crossorigin="">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#map">Chuyển đến bản đồ</a>
+  <div id="app">
+    <header class="topbar">
+      <button class="brand" id="brandReset" type="button" aria-label="Về toàn cảnh Việt Nam">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span><strong>EpiMap</strong><small>VIỆT NAM</small></span>
+      </button>
+      <div class="scenario-badge"><span></span>DỮ LIỆU GIẢ ĐỊNH · KỊCH BẢN 08/2026</div>
+      <nav class="view-tabs" aria-label="Chế độ hiển thị">
+        <button class="active" type="button" data-view="map">Bản đồ</button>
+        <button type="button" data-view="network">Mạng lây</button>
+        <button type="button" data-view="table">Danh sách ca</button>
+        <button type="button" data-view="chart">Biểu đồ</button>
+      </nav>
+      <button class="header-action" id="openInfo" type="button" aria-label="Thông tin bộ dữ liệu">i</button>
+    </header>
+
+    <main class="workspace">
+      <section id="map" aria-label="Bản đồ dịch tễ mô phỏng khu vực phía Nam"></section>
+      <div class="map-loading" id="mapLoading"><span></span>Đang tải nền bản đồ…</div>
+
+      <aside class="summary-panel glass" aria-label="Tổng quan ca bệnh">
+        <div class="summary-heading">
+          <div><span class="eyebrow">KỊCH BẢN GIÁM SÁT</span><strong id="totalCount">178</strong><small>hồ sơ dịch tễ</small></div>
+          <button class="icon-button" id="collapseSummary" type="button" aria-label="Thu gọn bảng tổng quan">‹</button>
+        </div>
+        <div class="status-list" id="statusList"></div>
+        <div class="mini-divider"></div>
+        <section class="filter-section">
+          <div class="section-label"><span>Thời gian tiếp nhận</span><output id="dateOutput">01–31/08/2026</output></div>
+          <input id="dateRange" type="range" min="0" max="30" value="30" aria-label="Ngày cuối khoảng lọc">
+          <div class="range-caption"><span>01/08</span><span>31/08</span></div>
+        </section>
+        <section class="filter-section compact-stats">
+          <div><strong id="contactCount">0</strong><span>tiếp xúc</span></div>
+          <div><strong id="provinceCount">0</strong><span>tỉnh/thành</span></div>
+          <div><strong id="facilityCount">0</strong><span>cơ sở</span></div>
+        </section>
+        <button class="secondary-action" id="openTable" type="button"><span>☷</span> Mở danh sách truy vấn</button>
+      </aside>
+
+      <section class="search-wrap" aria-label="Tìm kiếm">
+        <form class="search-box glass" id="searchForm" role="search">
+          <span class="search-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <input id="searchInput" type="search" autocomplete="off" placeholder="Tìm mã ca, tỉnh/thành, cơ sở…" aria-label="Tìm kiếm ca bệnh hoặc địa điểm">
+          <kbd>Ctrl K</kbd>
+          <button id="clearSearch" type="button" aria-label="Xóa tìm kiếm">×</button>
+        </form>
+        <div class="search-results glass" id="searchResults" role="listbox" hidden></div>
+      </section>
+
+      <div class="map-toolbar glass" aria-label="Điều khiển bản đồ">
+        <button id="zoomIn" type="button" title="Phóng to" aria-label="Phóng to">＋</button>
+        <button id="zoomOut" type="button" title="Thu nhỏ" aria-label="Thu nhỏ">−</button>
+        <span></span>
+        <button id="locate" type="button" title="Vị trí của tôi" aria-label="Định vị">⌖</button>
+        <button id="homeView" type="button" title="Toàn cảnh" aria-label="Toàn cảnh Việt Nam">⌂</button>
+        <button id="toggleFullscreen" type="button" title="Toàn màn hình" aria-label="Bật toàn màn hình">⛶</button>
+        <button id="toggleLayers" type="button" title="Lớp bản đồ" aria-label="Chọn lớp bản đồ">▱</button>
+        <button id="toggleTheme" type="button" title="Chế độ tối" aria-label="Đổi chế độ màu">◐</button>
+      </div>
+
+      <div class="layers-menu glass" id="layersMenu" hidden>
+        <strong>Lớp hiển thị</strong>
+        <label><input type="radio" name="basemap" value="street" checked> Đường phố</label>
+        <label><input type="radio" name="basemap" value="light"> Tối giản</label>
+        <label><input type="radio" name="basemap" value="dark"> Ban đêm</label>
+        <hr>
+        <label><input id="clusterToggle" type="checkbox" checked> Gom cụm ca bệnh</label>
+        <label><input id="zoneToggle" type="checkbox"> Vùng nguy cơ 3 km</label>
+        <label><input id="facilityToggle" type="checkbox" checked> Cơ sở tiếp nhận</label>
+      </div>
+
+      <div class="map-legend glass">
+        <button id="legendToggle" type="button" aria-expanded="true">Chú giải <span>⌄</span></button>
+        <div id="legendBody">
+          <i class="new"></i> Mới <i class="active-case"></i> Đang theo dõi
+          <i class="recovered"></i> Đã kết thúc <i class="suspected"></i> Nghi ngờ
+        </div>
+      </div>
+
+      <section class="timeline-dock glass" id="timelineDock" aria-label="Bộ lọc diễn tiến">
+        <button class="dock-toggle" id="dockToggle" type="button"><span>⌃</span> Diễn tiến theo ngày</button>
+        <div class="dock-content">
+          <button class="play-button" id="playTimeline" type="button" aria-label="Phát diễn tiến">▶</button>
+          <div class="timeline-track"><input id="timelineRange" type="range" min="0" max="30" value="30" aria-label="Ngày mô phỏng"><div class="timeline-labels"><span>01/08</span><span>08/08</span><span>15/08</span><span>22/08</span><span>31/08</span></div></div>
+          <strong id="timelineDay">31/08/2026</strong>
+          <button class="ghost-action" id="resetTimeline" type="button">Đặt lại</button>
+        </div>
+      </section>
+
+      <aside class="detail-panel glass" id="detailPanel" aria-label="Hồ sơ ca bệnh" aria-hidden="true">
+        <button class="close-detail" id="closeDetail" type="button" aria-label="Đóng hồ sơ">×</button>
+        <div id="detailContent"></div>
+      </aside>
+
+      <div class="focus-banner" id="focusBanner" hidden>
+        <strong>Đang xem chuỗi liên hệ <span id="focusId"></span></strong>
+        <span>Đường liền: nguồn giả định · Nét đứt: tiếp xúc</span>
+        <button id="exitFocus" type="button">× Thoát</button>
+      </div>
+
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    </main>
+
+    <dialog id="tableDialog" class="data-dialog">
+      <div class="dialog-head">
+        <div><span class="eyebrow">TRUY VẤN DỊCH TỄ</span><h2>Danh sách hồ sơ giả định</h2><p>Lọc, chọn ca trên bản đồ hoặc xuất dữ liệu đang hiển thị.</p></div>
+        <button id="closeTable" type="button" aria-label="Đóng danh sách">×</button>
+      </div>
+      <div class="table-actions">
+        <label><span>Tỉnh/thành</span><select id="provinceFilter"><option value="all">Tất cả</option></select></label>
+        <label><span>Trạng thái</span><select id="statusFilter"><option value="all">Tất cả</option><option value="new">Ca mới</option><option value="active">Đang theo dõi</option><option value="recovered">Đã kết thúc</option><option value="suspected">Nghi ngờ</option></select></label>
+        <label><span>Mức nguy cơ</span><select id="riskFilter"><option value="all">Tất cả</option><option value="Cao">Cao</option><option value="Trung bình">Trung bình</option><option value="Thấp">Thấp</option></select></label>
+        <div class="export-group"><button id="exportCsv" type="button">Xuất CSV</button><button id="exportGeoJson" type="button">Xuất GeoJSON</button></div>
+      </div>
+      <div class="table-wrap"><table><thead><tr><th>Mã ca</th><th>Tiếp nhận</th><th>Tỉnh/thành</th><th>Nhóm tuổi</th><th>Trạng thái</th><th>Nguy cơ</th><th>Cơ sở tiếp nhận</th></tr></thead><tbody id="caseTableBody"></tbody></table></div>
+      <div class="dialog-foot"><span id="tableCount">0 hồ sơ</span><span>Tọa độ đã được làm lệch có chủ đích trong kịch bản.</span></div>
+    </dialog>
+
+    <dialog id="chartDialog" class="data-dialog chart-dialog">
+      <div class="dialog-head">
+        <div><span class="eyebrow">PHÂN TÍCH THEO THỜI GIAN</span><h2>Diễn tiến 178 hồ sơ giả định</h2><p>Cột biểu diễn số hồ sơ tiếp nhận theo ngày; đường biểu diễn số hồ sơ tích lũy. Bộ lọc trạng thái trên bản đồ được phản ánh vào biểu đồ.</p></div>
+        <button id="closeChart" type="button" aria-label="Đóng biểu đồ">×</button>
+      </div>
+      <div class="chart-kpis">
+        <div><span>Hồ sơ đang hiển thị</span><strong id="chartVisibleCount">0</strong></div>
+        <div><span>Ngày cao nhất</span><strong id="chartPeakDay">—</strong></div>
+        <div><span>Tiếp nhận cao nhất</span><strong id="chartPeakCount">0</strong></div>
+        <div><span>Địa bàn</span><strong id="chartProvinceCount">10</strong></div>
+      </div>
+      <div class="chart-canvas-wrap"><canvas id="timelineChart" role="img" aria-label="Biểu đồ cột và đường theo thời gian"></canvas></div>
+      <div class="dialog-foot"><span>Dữ liệu mô phỏng · Kịch bản 08/2026</span><span>Không dùng cho quyết định y tế.</span></div>
+    </dialog>
+
+    <dialog id="infoDialog" class="info-dialog">
+      <button class="dialog-x" id="closeInfo" type="button" aria-label="Đóng">×</button>
+      <span class="eyebrow">GIỚI HẠN SỬ DỤNG</span>
+      <h2>Mô hình trình diễn, không phải dữ liệu y tế</h2>
+      <p>Tất cả mã ca, tuổi, giới tính, lịch trình, quan hệ tiếp xúc, cơ sở tiếp nhận và tọa độ trong website này đều được sinh giả định để minh họa năng lực WebGIS.</p>
+      <ul>
+        <li>Không đại diện cho cá nhân, ổ dịch hay báo cáo chính thức nào.</li>
+        <li>Tọa độ chỉ dùng ở mức khu vực và đã được làm lệch có chủ đích.</li>
+        <li>Không dùng để chẩn đoán, cảnh báo hay ra quyết định sức khỏe cộng đồng.</li>
+      </ul>
+      <div class="tech-note"><strong>Nền tảng mở</strong><span>Leaflet · Chart.js · OpenStreetMap · GeoJSON · Web standards</span></div>
+      <div class="tech-note"><strong>Nguồn mã</strong><span>Dựa trên mã nguồn MIT từ Vietflexmap/anhmap; kịch bản mô phỏng do Long Ngo thiết kế © 2026.</span></div>
+      <button class="primary-action" id="ackInfo" type="button">Tôi đã hiểu</button>
+    </dialog>
+
+    <noscript>Website cần JavaScript để hiển thị bản đồ và truy vấn dữ liệu.</noscript>
+  </div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" crossorigin=""></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>
